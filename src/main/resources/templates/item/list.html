@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>아이템 등록</title>
+</head>
+<body>
+    <th:block layout:fragment="content">
+
+            <table>
+                <thead>
+                <th>상품코드</th>
+                <th>상품명</th>
+                <th>상품설명</th>
+                <th>상품가격</th>
+                <th>재고수량</th>
+
+                </thead>
+                <tbody>
+                <th:block  th:each="itemDTO : ${responsePageDTO.dtoList}">
+
+                    <tr>
+                        <td th:text="${itemDTO.id}"></td>
+                        <td th:text="${itemDTO.itemNm}"></td>
+                        <td th:text="${itemDTO.itemDetail}"></td>
+                        <td th:text="${itemDTO.price}"></td>
+                        <td th:text="${itemDTO.stockNumber}"></td>
+                    </tr>
+                </th:block>
+
+                </tbody>
+            </table>
+
+    </th:block>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

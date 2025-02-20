@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>아이템 등록</title>
+</head>
+<body>
+    <th:block layout:fragment="content">
+
+        <div class="row mt-4">
+            <h1 class="text-center">등록</h1>
+            <div class="col-8 offset-2">
+                <form action="/admin/item/register" method="post" th:object="${itemDTO}">
+
+                <div class="row" >
+
+                    <div class="input-group mb-3">
+                        <label class="input-group-text" for="inputGroupSelect01">판매상태</label>
+                        <select class="form-select" id="inputGroupSelect01" th:field="*{itemSellStatus}">
+                            <option value="SELL">판매중</option>
+                            <option value="SOLD_OUT">품절</option>
+                        </select>
+                    </div>
+
+
+                    <div class="row" >
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="basic-addon1">상품명</span>
+                        <input type="text" class="form-control" th:field="*{itemNm}" placeholder="상품명을 입력해주세요" aria-label="Username" aria-describedby="basic-addon1">
+                    </div>
+                        <p th:if="${#fields.hasErrors('itemNm')}" th:errors="*{itemNm}" class="fieldError"></p>
+
+                    </div>
+
+                        <div class="input-group mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text" id="basic-addon1">상품상세설명</span>
+                                <textarea class="form-control" th:field="*{itemDetail}" aria-label="With textarea"></textarea>
+                            </div>
+                            <p th:if="${#fields.hasErrors('itemDetail')}" th:errors="*{itemDetail}" class="fieldError"></p>
+                        </div>
+                    </div>
+
+                    <div class="row" >
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="basic-addon1">가격</span>
+                            <input type="number" min="0" class="form-control" th:field="*{price}" placeholder="가격을 입력해주세요" aria-label="Username" aria-describedby="basic-addon1" required>
+                            <p th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="fieldError"></p>
+                        </div>
+                    </div>
+
+                    <div class="row" >
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="basic-addon1">재고수량</span>
+                            <input type="number" min="0" class="form-control" th:field="*{stockNumber}" placeholder="재고수량을 입력해주세요" aria-label="Username" aria-describedby="basic-addon1" required>
+                            <p th:if="${#fields.hasErrors('stockNumber')}" th:errors="*{stockNumber}" class="fieldError"></p>
+                        </div>
+                    </div>
+
+
+
+                    <button>저장</button>
+                    </form>
+            </div>
+        </div>
+
+
+
+
+
+
+
+    </th:block>
+
+
+
+
+
+
+
+</body>
+</html>

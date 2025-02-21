@@ -18,6 +18,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
@@ -39,7 +40,16 @@ public class ItemController {
 
     @PostMapping("/register")
     public String registerPost(@Valid ItemDTO itemDTO, BindingResult bindingResult,
-                               RedirectAttributes redirectAttributes) {
+                               RedirectAttributes redirectAttributes, MultipartFile[] multipartFile) {
+
+        if (multipartFile != null) {
+            for (MultipartFile a : multipartFile) {
+                log.info(a);
+                log.info(a.getOriginalFilename());
+                log.info(a.getSize());
+
+            }
+        }
 
         log.info("아이템 등록 post : " + itemDTO);
 

@@ -18,13 +18,15 @@ public class ItemDTO {
     @NotBlank(message = "상품명은 필수 입력 값입니다.")
     private String itemNm; //상품명
 
-    @Min(value = 0, message = "가격은 0이상 값이여야 합니다.")
+    @NotNull(message = "가격은 필수입니다.")
+    @PositiveOrZero(message = "가격은 0보다 커야합니다.")
     private int price; //가격
 
     @NotBlank(message = "상품 상세설명은 필수 입력 값입니다.")
     private String itemDetail; //상품 설명
 
-    @Min(value = 1, message = "재고수량은 0이상이여야 합니다.")
+    @NotNull(message = "재고는 필수입니다.")
+    @PositiveOrZero(message = "가격은 0보다 커야합니다.")
     private int stockNumber; //재고 수량
 
     //상품 판매상태 대기      판매중/품절

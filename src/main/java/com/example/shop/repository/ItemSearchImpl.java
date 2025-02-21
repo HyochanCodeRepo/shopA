@@ -29,7 +29,7 @@ public class ItemSearchImpl extends QuerydslRepositorySupport implements ItemSea
 
         //select * from board
         QItem item = QItem.item;
-        JPQLQuery<Item> query = from(item);
+        JPQLQuery<Item> query = from(item); //여기까지 select * from item;
         System.out.println("쿼리문 1 : " + query);
 
         //types에 따른 where 문

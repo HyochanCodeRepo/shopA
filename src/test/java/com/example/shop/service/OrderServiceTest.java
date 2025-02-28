@@ -28,7 +28,12 @@ class OrderServiceTest {
         ResponsePageDTO<OrderHistDTO> responsePageDTO =
             orderService.getOrderList("hyo@a.a", requestPageDTO);
 
-        responsePageDTO.getDtoList().forEach(orderHistDTO -> log.info(orderHistDTO));
+        if (responsePageDTO.getDtoList() == null) {
+            log.info("주문 목록이 없습니다.");
+        } else {
+            responsePageDTO.getDtoList().forEach(orderHistDTO -> log.info(orderHistDTO));
+
+        }
 
 
     }

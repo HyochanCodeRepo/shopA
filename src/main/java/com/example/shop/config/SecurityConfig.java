@@ -31,6 +31,7 @@ public class SecurityConfig {
                                 //권한이 ADMIN인사람은 해당페이지 접속 가능
 //                                .requestMatchers("/admin/item/**").hasRole("ADMIN")
                                 .requestMatchers("/admin/item/**").hasRole("ADMIN")
+                                .requestMatchers("/orders/**").authenticated() //로그인이 되어있어야만 하는 주소
                                 .anyRequest().permitAll()
 
 
@@ -52,7 +53,7 @@ public class SecurityConfig {
                 .exceptionHandling(
                         a -> a.accessDeniedHandler(new CustomAccessDeniedHandler())
                 );
-
+        
         
         //로그인 : 인증
         

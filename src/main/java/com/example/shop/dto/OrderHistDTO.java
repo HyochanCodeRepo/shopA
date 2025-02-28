@@ -2,11 +2,17 @@ package com.example.shop.dto;
 
 import com.example.shop.constant.OrderStatus;
 import com.example.shop.entity.Orders;
+import lombok.*;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class OrderHistDTO {
 
     private Long orderId; //주문아이디
@@ -29,15 +35,6 @@ public class OrderHistDTO {
         this.orderDate = orders.getRegTime()
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.orderStatus = orders.getOrderStatus();
-
-
-
-
-
-
-
-
-
 
 
 

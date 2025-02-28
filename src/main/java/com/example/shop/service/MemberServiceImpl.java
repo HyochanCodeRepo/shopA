@@ -27,7 +27,6 @@ public class MemberServiceImpl implements MemberService, UserDetailsService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-
     public String signUp(MemberDTO memberDTO) {
 
         //signup진입시 이메일로 가입여부 확인 먼저 실행!

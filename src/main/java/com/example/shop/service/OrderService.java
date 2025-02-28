@@ -85,7 +85,6 @@ public class OrderService {
         List<OrderHistDTO> orderHistDTOList = new ArrayList<>();//뷰페이지로 가는 객체. 밑에 걸러진게 여기로 들어감
 
 
-
         for (Orders orders : ordersList) {
             OrderHistDTO orderHistDTO = new OrderHistDTO(orders);
 
@@ -101,7 +100,7 @@ public class OrderService {
                     //대표이미지라면 orderItemDTO로 변환
                     if (imgEntity.getRepImgYn() != null && imgEntity.getRepImgYn().equals("Y")) {
                         OrderItemDTO orderItemDTO =
-                                new OrderItemDTO(entity, imgEntity.getImgUrl() + imgEntity.getImgName());
+                                new OrderItemDTO(entity, imgEntity.getImgName());
 
                         orderHistDTO.addOrderItemDTO(orderItemDTO);
 
@@ -109,6 +108,8 @@ public class OrderService {
                 }
 
             }
+            orderHistDTOList.add(orderHistDTO);
+
 
         }
         return new ResponsePageDTO(requestPageDTO, orderHistDTOList, (int)ordersPage.getTotalElements());

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -35,4 +36,12 @@ public class ItemDTO {
     private LocalDateTime updateTime;
 
     private String createdBy;
+
+    private List<ImgDTO> imgDTOList;
+
+    public ItemDTO setImgDTOList(List<ImgDTO> imgDTOList) {
+        this.imgDTOList = imgDTOList;
+        return this;
+    }
+
 }

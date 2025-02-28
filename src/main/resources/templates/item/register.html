@@ -76,7 +76,7 @@
                     <div class="row">
                         <div class="imgA">
                             <label for="formFileLg1" class="form-label">대표이미지</label>
-                            <input name="mutipartFile" class="form-control form-control-lg mainimg imgInput" id="formFileLg1" type="file">
+                            <input name="mainimg" class="form-control form-control-lg mainimg imgInput" id="formFileLg1" type="file">
                         </div>
 
                         <div  class="imgA">
@@ -100,6 +100,12 @@
     <script th:inline="javascript">
 
         $(document).ready(function () {
+
+            let msg = [[${msg}]];
+            imgInputCheck(msg);
+
+
+
             let imgA = $(".imgA");
 
             //input type: file에 대한 이벤트
@@ -150,7 +156,7 @@
                     reader.onload = function (e) {
                         let inputtag = document.createElement("input");
                         inputtag.type = "file";
-                        inputtag.name = "multipartFile";
+                        inputtag.name = "mainimg";
                         //참조 복사
                         //inputtag.files = input.files;
                         const dataTransfer = new DataTransfer()
@@ -171,6 +177,12 @@
                     reader.readAsDataURL(input.files[0])
                 }
 
+            }
+            //대표이미지 있는지 없는지 체크
+            function imgInputCheck(msg){
+                if (msg) {
+                    alert(msg)
+                }
             }
 
             //미리보기 상세
@@ -194,7 +206,7 @@
 
                         let str1 = `<div class="preview col"><img width="100%" src="${e.target.result}"><button type="button" class="bb">올리지 않기</button></div>`
 
-                        $(".imgd").append(str1)
+                        $(".imgd").prepend(str1)
                         $(".imgd").find('div:eq(0)').append(inputtag)
                         $(".imgd").find('input').hide()
                         $(".imgInput").val("");

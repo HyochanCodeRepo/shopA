@@ -22,6 +22,8 @@ public class RequestPageDTO {
     @Builder.Default
     private int size = 10; //한페이지에 들어올 게시글 수
 
+    private String searchDateType = "all";
+
     private String type; //검색의 종류 t,c,w,tc,tw,twc
                          // 제목, 내용, 작성자, 제목&내용, 제목&작성자, 제목&내용&작성자 셀렉트 박스로
                          //if(type.equals("tc")) { 만약에 검색의 종류가 제목으로 검색한다면

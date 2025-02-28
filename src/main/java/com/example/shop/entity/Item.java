@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -34,7 +35,8 @@ public class Item extends BaseEntity {
     @Enumerated(EnumType.STRING)
     ItemSellStatus itemSellStatus;
 
-//    private LocalDateTime regTime;
+    //    private LocalDateTime regTime;
 //    private LocalDateTime updateTime;
-
+    @OneToMany(mappedBy = "item", fetch = FetchType.LAZY)
+    private List<ImgEntity> imgEntityList;
 }

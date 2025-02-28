@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ItemSearchImpl extends QuerydslRepositorySupport implements ItemSearch{
@@ -73,6 +74,65 @@ public class ItemSearchImpl extends QuerydslRepositorySupport implements ItemSea
         //총게시물
         long count =
             query.fetchCount();
+
+        return new PageImpl<>(itemList, pageable, count);
+    }
+
+    
+    @Override
+    public Page<Item> mainList(String[] types, String keyword,String searchDateType, Pageable pageable) {
+        //타입이 t라면 날짜검색
+
+        QItem item = QItem.item;
+        JPQLQuery<Item> query = from(item); //여기까지 select * from item;
+        LocalDateTime time = LocalDateTime.now();
+
+        if (searchDateType.equals("") || searchDateType == null ||searchDateType.equals("all")) {
+
+        } else {
+            BooleanBuilder booleanBuilder = new BooleanBuilder();
+            if(searchDateType.equals("1d")) {
+                booleanBuilder.and(item.regTime.after(time.minusDays(1)));
+            } else if (searchDateType.equals("1w")) {
+                booleanBuilder.and(item.regTime.after(time.minusWeeks(1)));
+            } else if (searchDateType.equals("1m")) {
+                booleanBuilder.and(item.regTime.after(time.minusMonths(1)));
+            } else if (searchDateType.equals("6m")) {
+                booleanBuilder.and(item.regTime.after(time.minusMonths(6)));
+            }
+            query.where(booleanBuilder);
+        }
+
+        if ((types != null && types.length > 0) && keyword != null) {
+            BooleanBuilder booleanBuilder = new BooleanBuilder();
+
+            for (String type : types) {
+                if (type.equals("p")) {//가격
+                    booleanBuilder.or(item.price.gt(Integer.parseInt(keyword)));
+                }else if(type.equals("n")) {//아이템이름
+                    booleanBuilder.or(item.itemNm.contains(keyword));
+                }else if(type.equals("d")) {//아이템상세설명
+                    booleanBuilder.or(item.itemDetail.contains(keyword));
+                }else if(type.equals("s")) {//판매여부
+                    booleanBuilder.or(item.itemSellStatus.eq(ItemSellStatus.valueOf(keyword)));
+                } else if (type.equals("T")) {
+
+                }
+            }
+            query.where(booleanBuilder);
+
+        }
+
+
+
+        query.where(item.id.gt(0L));
+        //페이징처리
+        this.getQuerydsl().applyPagination(pageable, query);
+
+        List<Item> itemList=
+                query.fetch();
+        long count =
+                query.fetchCount();
 
         return new PageImpl<>(itemList, pageable, count);
     }

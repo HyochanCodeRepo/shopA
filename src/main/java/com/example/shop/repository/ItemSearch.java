@@ -9,6 +9,8 @@ public interface ItemSearch {
 
 
     public Page<Item> search(String[] types, String keyword,String email, Pageable pageable);
+    public Page<Item> mainList(String[] types, String keyword,String searchDateType, Pageable pageable);
+
 
 
 

@@ -15,9 +15,6 @@ import java.net.URLEncoder;
 @AllArgsConstructor
 @Builder
 public class RequestPageDTO {
-
-    //페이징처리, 검색처리를 위한 dto
-
     @Builder.Default
     private int page = 1; //기본적으로 1인데 빌더 디폴트를 사용해서 파라미터 수집 안될 시 1이 디폴트임
 

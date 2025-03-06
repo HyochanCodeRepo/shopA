@@ -117,6 +117,53 @@ public class OrderService {
 
     }
 
+    //주문취소
+    public void cancelOrder(Long orderId) {
+        
+        //pk로 주문취소하려는 주문을 불러오기
+        Orders orders =
+            ordersRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
+
+        //주문상태를 취소 상태로 변경!
+        if (orders.getOrderStatus() == OrderStatus.ORDER) {
+            orders.setOrderStatus(OrderStatus.CANCEL);
+        }
+
+        //취소되는 주문아이템들의 수량만큼 재고에 더해준다
+        List<OrderItem> orderItemList = orders.getOrderItems();
+
+        for (OrderItem orderItem : orderItemList) {
+//            orderItem.getCount(); //주문수량
+//            orderItem.getItem().getStockNumber(); //재고수량
+            orderItem.getItem().setStockNumber(
+                    orderItem.getItem().getStockNumber()
+                    +orderItem.getCount()
+            );
+        }
+        
+    }
+
+
+    //주문유효성 검사
+    //자신이 주문한 내역인지 확인하는 메소드
+    public boolean validateOrder(Long orderId, String email) {
+        Member member =
+            memberRepository.findByEmail(email); //로그인한사람 사람 찾아오기
+
+
+        Orders orders =
+            ordersRepository.findById(orderId)
+                .orElseThrow(EntityNotFoundException::new); //주문목록을 찾아온다
+
+        Member saveMember =
+            orders.getMember(); //주문 참조하는 회원(구매자)
+
+        //현재 로그인 사용자와 주문의 참조하는 회원이 같지 않다면
+        if (!member.getEmail().equals(saveMember.getEmail())) {
+            return false;
+        }
+        return true;
+    }
 
 
 

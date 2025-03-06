@@ -93,7 +93,7 @@ public class OrderController {
             return "redirect:/";
         }
         ResponsePageDTO<OrderHistDTO> responsePageDTO =
-            orderService.getOrderList(principal.getName(), requestPageDTO);
+                orderService.getOrderList(principal.getName(), requestPageDTO);
 
 //        responsePageDTO.getDtoList().forEach(orderHistDTO -> log.info(orderHistDTO));
 
@@ -101,5 +101,28 @@ public class OrderController {
 
         return "order/orderHist";
     }
+
+    @PostMapping("/order/{orderId}/cancel")
+    public ResponseEntity cancelOrder(@PathVariable("orderId") Long orderId, Principal principal) {
+
+        if (!orderService.validateOrder(orderId, principal.getName())) {
+
+
+            return new ResponseEntity<String>("주문취소 권한이 없습니다.", HttpStatus.FORBIDDEN);
+
+        }
+
+        log.info("받은 주문번호 " + orderId);
+        log.info("받은 주문번호 " + orderId);
+        log.info("받은 주문번호 " + orderId);
+        log.info("받은 주문번호 " + orderId);
+
+        orderService.cancelOrder(orderId);
+
+        return new ResponseEntity<Long>(orderId, HttpStatus.OK);
+    }
+
+
+
 
 }

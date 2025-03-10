@@ -3,7 +3,9 @@ package com.example.shop.controller;
 
 import com.example.shop.dto.CartDetailDTO;
 import com.example.shop.dto.CartItemDTO;
+import com.example.shop.exception.OutOfStockException;
 import com.example.shop.service.CartService;
+import com.example.shop.service.OrderService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +16,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -27,6 +27,7 @@ import java.util.List;
 @Log4j2
 public class CartController {
     private final CartService cartService;
+    private final OrderService orderService;
 
     //ResponseEntity 붙이면 REST 방식
     @PostMapping("/cart")
@@ -80,6 +81,10 @@ public class CartController {
 //
 //        model.addAttribute("cartDetailDTOList", cartDetailDTOList);
         //상과 동일하지만 줄여서 이렇게 씀
+        if (principal == null) {
+            return "redirect:/user/login";
+        }
+
         model.addAttribute("cartDetailDTOList", cartService.getCartList(principal.getName()));
 
         return "cart/cartList";
@@ -89,29 +94,125 @@ public class CartController {
     @PatchMapping("/cartItem/{cartItemId}/{count}")
     public ResponseEntity updateCount(
             @PathVariable("cartItemId") Long cartItemId,
-            @PathVariable("count") Long count,Principal principal){
+            @PathVariable("count") int count, Principal principal) {
 
-        log.info("장바구니 아이템 번호 : " +cartItemId);
-        log.info("장바구니 아이템 번호 : " +cartItemId);
-        log.info(cartItemId);
-        log.info(cartItemId);
-
-        log.info("수량 :" +  count);
+        log.info("수량 :" + count);
         log.info(count);
         log.info(count);
         if (count <= 0) {
             return new ResponseEntity<String>("최소 1개이상 담아주세요",
                     HttpStatus.BAD_REQUEST);
-        } else{
+        } else {
 
         }
-        
+
+        if (principal == null) {
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+
+        }
+        //현재 카트가 내거인가?
+        if (!cartService.validateCartItem(cartItemId, principal.getName())) {
+            //일치하지 않는다면 false값이기때문에 !붙여주고
+            //본인께 아니니까 다시 페이지 이동
+            return new ResponseEntity(HttpStatus.FORBIDDEN);
+
+        }
+
+        //카트아이템의 수량변경
+        cartService.updateCartItemCount(cartItemId, count);
+
+
         //카트 상품에 대한 접근 제한해야됨 //접근이 가능하다면 DB에 장바구니 아이템 대한 수량을 변경한다.
 
 
-
-        return new ResponseEntity<String>(HttpStatus.OK);
+        return new ResponseEntity(HttpStatus.OK);
     }
+
+    //주소, 방식, 값
+    //값을 변수로 받을지, 주소로 받을지
+
+//    @DeleteMapping("/cartItemdel/{cartItemId")
+//    public ResponseEntity delcartItem(){
+//        return new ResponseEntity(HttpStatus.OK);
+//    }
+
+
+
+    @DeleteMapping("/cartItemdel")
+    public ResponseEntity delcartItem(Long cartItemId, Principal principal){
+        log.info("컨트롤러로 들어온값 : " + cartItemId);
+
+        if (principal == null) {
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+
+        }
+        //현재 카트가 내거인가?
+        if (!cartService.validateCartItem(cartItemId, principal.getName())) {
+            //일치하지 않는다면 false값이기때문에 !붙여주고
+            //본인께 아니니까 다시 페이지 이동
+            return new ResponseEntity(HttpStatus.FORBIDDEN);
+
+        }
+        
+        //삭제
+        try {
+            cartService.cartItemdel(cartItemId);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+
+
+        return new ResponseEntity(HttpStatus.OK);
+
+
+    }
+
+    @PostMapping("/cart/orders")
+    public ResponseEntity aaaa(@RequestParam(value ="cartItemIdList", required = false) List<Long> cartItemIdList, Principal principal) {
+
+        log.info(cartItemIdList);
+        log.info(cartItemIdList);
+        log.info(cartItemIdList);
+        log.info(cartItemIdList);
+
+        if (principal == null) {
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+
+        }
+
+        if (cartItemIdList == null) {
+            return new ResponseEntity<String>("2", HttpStatus.BAD_REQUEST);
+
+        }
+        //현재 카트가 내거인가?
+        for (Long cartItemId : cartItemIdList) {
+            if (!cartService.validateCartItem(cartItemId, principal.getName())) {
+                //일치하지 않는다면 false값이기때문에 !붙여주고
+                //본인께 아니니까 다시 페이지 이동
+                return new ResponseEntity(HttpStatus.FORBIDDEN);
+
+            }
+        }
+        //저장 주문
+        try {
+            orderService.orders(cartItemIdList, principal.getName());
+
+
+        } catch (OutOfStockException e) {
+            return new ResponseEntity<String>("1", HttpStatus.BAD_REQUEST);
+
+        }
+
+
+        return new ResponseEntity(HttpStatus.OK);
+
+
+    }
+
+
+
+
+
 
 
 

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -94,5 +95,67 @@ public class CartService {
 
 
     }
+
+    //카트의 주인확인
+    public boolean validateCartItem(Long cartItemId, String email) {
+        Member member = memberRepository.findByEmail(email);
+
+
+        //현재 컨트롤러로부터 넘겨받은 카트아이템의 아이디를 통해서
+        //카트 아이템을 찾는다면,
+        Optional<CartItem> optionalCartItem =
+            cartItemRepository.findById(cartItemId);
+
+        CartItem cartItem = optionalCartItem.orElseThrow(EntityNotFoundException::new);
+
+        //카트아이템이 담긴 카트를 찾을 수 있고
+        Cart cart =
+            cartItem.getCart();
+
+        //카트가 참조하는 멤버를 찾을 수 있따.
+        Member cartMember = cart.getMember();
+
+        //현재 로그인한 회원과, 카트가 참조하는 회원의 pk번호가 일치하는가
+        //혹은 유일한 값인 email이 일치하는가?
+        //select * from cartItem
+                        // join cart on cartItem.cart_id = cart.cart_id
+                        // join member on cart.member_id = member.member_id
+                    //where member.email = 현재 넘겨받은 email
+                    //and cartItem.cartItem_id = 넘겨받은 cartItemId
+        if (member.getNum() == cartMember.getNum()) {
+            //일치한다면
+            return true;
+        } else {
+            return false;
+        }
+
+
+
+    }
+
+
+    public void updateCartItemCount(Long cartItemId, int count) {
+        //select * from carItem where cartItem.cartItem_id = :id(입력pk)
+        CartItem cartItem =
+            cartItemRepository.findById(cartItemId).orElseThrow(EntityNotFoundException::new);
+        cartItem.setCount(count);
+
+    }
+
+    //삭제
+    public void cartItemdel(Long cartItemId) {
+        log.info("서비스로 들어온 pk값 : " + cartItemId);
+        
+        //들어온 pk를 가지고 데이터 삭제
+        //delete from cartItem where cartItem_id = :id(파라미터)
+        //들어온 값이 있는지 확인해서 예외처리 할때
+        CartItem cartItem =
+            cartItemRepository.findById(cartItemId).orElseThrow(EntityNotFoundException::new);
+
+        cartItemRepository.delete(cartItem);
+//        cartItemRepository.findById(cartItemId); 찾아서 삭제할때
+
+    }
+
 
 }

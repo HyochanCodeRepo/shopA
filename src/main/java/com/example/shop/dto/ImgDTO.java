@@ -21,4 +21,6 @@ public class ImgDTO {
     private String repImgYn; //대표 이미지 여부 //Y일경우 대표이미지
     //참조대상
     private ItemDTO itemDTO;
+    private Long bno;
+
 }

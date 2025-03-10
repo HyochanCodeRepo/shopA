@@ -2,6 +2,7 @@ package com.example.shop.entity;
 
 import com.example.shop.constant.ItemSellStatus;
 import com.example.shop.entity.base.BaseEntity;
+import com.example.shop.exception.OutOfStockException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,4 +40,15 @@ public class Item extends BaseEntity {
 //    private LocalDateTime updateTime;
     @OneToMany(mappedBy = "item", fetch = FetchType.LAZY)
     private List<ImgEntity> imgEntityList;
+
+    public void orderStockNumber(int count) {
+        //주문이나 주문 취소 수량을 받아서 재고를 확인 후
+        //재고 수량을 변경해준다.
+        if (this.stockNumber - count < 0) {
+            throw new OutOfStockException("상품재고가 부족합니다. (현재수량 : " + this.getStockNumber() + ")" );
+
+        }
+        this.stockNumber = this.stockNumber - count;
+
+    }
 }

@@ -53,7 +53,8 @@
                                                 <input type="number" class="form-control count" th:data-cartItemId="${cartDTO.cartItemId}" th:id="${'count_' + cartDTO.cartItemId}" th:value="${cartDTO.count}">
                                             </div>
                                             <div class="col-auto">
-                                                <button type="button" class="close">X</button>
+                                                <!--장바구니 삭제버튼-->
+                                                <button type="button" class="btn-close" th:value="${cartDTO.cartItemId}" aria-label="Close"></button>
                                             </div>
                                         </div>
                                     </div>
@@ -78,7 +79,7 @@
 
     <div class="row">
         <div class="col text-center">
-            <button class="btn btn-primary">주문하기</button>
+            <button class="btn btn-primary ordersBtn">주문하기</button>
         </div>
     </div>
 
@@ -99,6 +100,42 @@
                 checkAll()
             });
 
+            $(".btn-close").on("click", function () {
+                console.log($(this).val())
+                cartItemId($(this).val())
+            });
+
+
+
+            function cartItemId(cartItemId) {
+                //삭제할 아이템
+                //주소, /cartItemdel, 방식 delete
+                let paramData = {cartItemId: cartItemId}
+                $.ajax({
+                    url: "/cartItemdel",
+                    type: "delete",
+                    data : paramData,
+                    success: function () {
+                        location.href="/cart"
+                    },
+                    error :function (jqXHR , status , error) {
+                        if(jqXHR.status == '401') {
+                            alert("로그인후 이용해주세요")
+                            location.href = "/user/login" ; //401 로그인 안되어있을때 로그인페이지로
+                        }else if (jqXHR.status == '403'){
+                            alert(jqXHR.responseText);//에러에 대한 내용 출력
+                            location.href = "/user/login" ;
+                        }
+                    }
+
+
+                });
+
+            }
+
+
+
+
             function updateCount(target) {
                 let count =target.val(); // 수량
                 let cartItemId = target.attr("data-cartItemId") //pk
@@ -110,9 +147,16 @@
                     success: function () {
 
                     },
-                    error: function () {
-
+                    error :function (jqXHR , status , error) {
+                        if(jqXHR.status == '401') {
+                            alert("로그인후 이용해주세요")
+                            location.href = "/user/login" ; //401 로그인 안되어있을때 로그인페이지로
+                        }else if (jqXHR.status == '403'){
+                            alert(jqXHR.responseText);//에러에 대한 내용 출력
+                            location.href = "/user/login" ;
+                        }
                     }
+
                 })
 
             }
@@ -130,6 +174,70 @@
 
             }
 
+            $(".ordersBtn").on("click", function () {
+                orders();
+            });
+
+
+            function orders() {
+                //주문하기 버튼을 누를때 작동하는 함수
+
+                //1.체크박스로 체크한 pk값 가져오기
+                //2.체크박스로 체크한 pk값 가져와서 보내기(데이터)
+
+
+                let dataList = new Array();
+                //["사과", "바나나"]; [3,4,5,6,7]
+                //결과는 키:밸류로 객체형태로 보낼거임[{cartItemId:3},{cartItemId:34}]
+                let paramData = new Object(); //리스트를 받기위해서 데이터를 보낼때
+                                            //paramData객체에 추가해서 보낸다.
+                                            //stringify로 json 안해도 키값만 맞추자
+
+                $("input[name=cartChkBox]:checked").each(
+                    function () {
+                        let cartItemId = $(this).val();
+                        console.log(cartItemId)
+                        //현재 장바구니에 담긴 아이템은 여러개이기 때문에
+                        //데이터를 pk값을 배열로 만들어서 보내자
+                        dataList.push(cartItemId);
+                    }
+                )
+                paramData = {cartItemIdList : dataList}
+                let paramDataList = new Object();
+                paramDataList['cartItemId'] = dataList;
+
+                //3.보낼주소, 보낼방식
+                $.ajax({
+                    url : "/cart/orders",
+                    type : "post",
+                    data : {cartItemIdList: dataList},
+                    success: function () {
+                        location.href = "/orders"
+                    },
+                    error :function (jqXHR , status , error) {
+                        if(jqXHR.status == '401') {
+                            alert("로그인후 이용해주세요")
+                            location.href = "/user/login" ; //401 로그인 안되어있을때 로그인페이지로
+                        }else if (jqXHR.status == '403'){
+                            alert(jqXHR.responseText);//에러에 대한 내용 출력
+                            location.href = "/user/login" ;
+                        } else if (jqXHR.status == '400'){
+                            if (jqXHR.responseText == '1') {
+                                alert("재고수량이 부족")
+                            }else if (jqXHR.responseText == '2') {
+                                alert("상품을 선택해주세요.")
+                            }
+                            // alert(jqXHR.responseText);//에러에 대한 내용 출력
+                        }
+                    }
+
+
+                })
+
+            }
+
+
+
             //총 주문금액
             function getOrderTotalPrice(){
 
@@ -139,13 +247,6 @@
                         let cartItemId = $(this).val();
                         let price = $("#price_" + cartItemId);
                         let count = $("#count_" + cartItemId)
-
-                        console.log(cartItemId)
-                        console.log(price)
-                        console.log(price.text())
-                        console.log(price.data("price"))
-                        console.log(count.val())
-
                         let totalPrice = count.val() * price.data("price");
                         orderTotalPrice += totalPrice;
                     }
@@ -173,6 +274,13 @@
                 $("#checkall").on("change", function () {
                     checkAll()
                 });
+
+
+
+
+
+
+
 
                 function checkAll() {
                     if ($("#checkall").prop("checked")) {

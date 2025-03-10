@@ -71,6 +71,8 @@ class ItemRepositoryTest {
             Item result =
                     itemRepository.save(item);
 
+            log.info(result);
+
         }
 
     }

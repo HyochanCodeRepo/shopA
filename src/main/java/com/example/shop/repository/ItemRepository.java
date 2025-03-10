@@ -35,6 +35,9 @@ public interface ItemRepository extends JpaRepository<Item, Long>, ItemSearch {
     @Query("select i from Item i where i.itemNm like '%'||:keyword||'%' or i.itemDetail like '%'||:keyword||'%'")
     public List<Item> selectItemNmItemDetail(String keyword);
 
+    @Query(value = "select i from Item i")
+    public List<Item> exselect();
+
 
 
 
